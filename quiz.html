@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addition Quiz</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+  }
+  h1 { margin-top: 0; font-size: 1.6rem; color: #1a3b5d; }
+  .question {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    font-size: 1.4rem;
+  }
+  .question label { flex: 1; }
+  .question input {
+    width: 80px;
+    padding: 8px;
+    font-size: 1.2rem;
+    border: 2px solid #cbd5e0;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .mark { font-size: 1.4rem; width: 28px; }
+  button {
+    margin-top: 16px;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover { background: #2c5282; }
+  #result {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    min-height: 1.4rem;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Addition Quiz</h1>
+    <p>Solve these 3 questions and type your answers.</p>
+    <form id="quiz"></form>
+    <button type="button" id="check">Check Answers</button>
+    <button type="button" id="newQuiz">New Quiz</button>
+    <div id="result"></div>
+  </div>
+
+<script>
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Generate an addition question whose answer is at most 50.
+  function makeQuestion() {
+    const a = randomInt(1, 49);
+    const b = randomInt(1, 50 - a);
+    return { a, b, answer: a + b };
+  }
+
+  let questions = [];
+
+  function buildQuiz() {
+    questions = [makeQuestion(), makeQuestion(), makeQuestion()];
+    const form = document.getElementById('quiz');
+    form.innerHTML = '';
+    questions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML =
+        '<label for="q' + i + '">' + q.a + ' + ' + q.b + ' =</label>' +
+        '<input type="number" id="q' + i + '" autocomplete="off">' +
+        '<span class="mark" id="m' + i + '"></span>';
+      form.appendChild(div);
+    });
+    document.getElementById('result').textContent = '';
+    for (let i = 0; i < questions.length; i++) {
+      document.getElementById('m' + i).textContent = '';
+    }
+  }
+
+  function checkAnswers() {
+    let correct = 0;
+    questions.forEach((q, i) => {
+      const input = document.getElementById('q' + i);
+      const mark = document.getElementById('m' + i);
+      const val = parseInt(input.value, 10);
+      if (val === q.answer) {
+        mark.textContent = '✓';
+        mark.style.color = 'green';
+        correct++;
+      } else {
+        mark.textContent = '✗';
+        mark.style.color = 'red';
+      }
+    });
+    const result = document.getElementById('result');
+    result.textContent = 'You got ' + correct + ' out of ' + questions.length + ' correct!';
+    result.style.color = correct === questions.length ? 'green' : '#1a3b5d';
+  }
+
+  document.getElementById('check').addEventListener('click', checkAnswers);
+  document.getElementById('newQuiz').addEventListener('click', buildQuiz);
+
+  buildQuiz();
+</script>
+</body>
+</html>
